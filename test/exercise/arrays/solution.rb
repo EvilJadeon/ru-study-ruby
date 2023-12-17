@@ -2,30 +2,25 @@ module Exercise
   module Arrays
     class << self
       def replace(array)
-        new_array = []
-        max_element = array.sort.last
-
-        for i in 0..array.length - 1
-          modified_element = array[i].positive? ? max_element : array[i]
-          new_array << modified_element
+        array.map do |element|
+          element.positive? ? max(array, element) : element
         end
-        new_array
       end
 
       def search(array, query, low = 0, high = array.length - 1)
-        if low <= high
-          mid = (low + high) / 2
-          mid_value = array[mid]
+        return -1 unless low <= high
 
-          if mid_value == query
-            return mid
-          elsif mid_value > query
-            return search(array, query, low, mid - 1)
-          elsif mid_value < query
-            return search(array, query, mid + 1, high)
-          end
-        end
-        -1
+        mid = (low + high) / 2
+        mid_value = array[mid]
+
+        return mid if mid_value == query
+        return mid_value > query ? search(array, query, low, mid - 1) : search(array, query, mid + 1, high)
+      end
+
+      private
+
+      def max(array, element)
+        array.reduce(element) { |acc, element| acc < element ? element : acc }
       end
     end
   end
