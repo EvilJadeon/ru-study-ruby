@@ -5,50 +5,24 @@ module Exercise
       # film["name"], film["rating_kinopoisk"], film["rating_imdb"],
       # film["genres"], film["year"], film["access_level"], film["country"]
       def rating(array)
-        prepared_films = map(array) do |film|
+        prepared_films = array.map do |film|
           film if countries_count(film) >= 2 && rating_positive?(film)
-        end
+        end.compact
 
-        needed_films = compact(prepared_films)
-
-        overall_rating = reduce(needed_films, 0) do |acc, film|
+        overall_rating = prepared_films.reduce(0) do |acc, film|
           acc + current_rating(film)
         end
 
-        overall_rating / needed_films.count
+        overall_rating / prepared_films.count
       end
 
       def chars_count(films, threshold)
-        sort_films = map(films) { |film| film if current_rating(film) >= threshold }
-        compact_films = compact(sort_films)
-        reduce(compact_films, 0) { |acc, film| acc + letters_count(film['name'], 'и') }
+        films.map { |film| film if current_rating(film) >= threshold }
+             .compact
+             .reduce(0) { |acc, film| acc + letters_count(film['name'], 'и') }
       end
 
       private
-
-      def map(array)
-        new_collection = []
-        for i in array
-          new_collection << yield(i)
-        end
-        new_collection
-      end
-
-      def reduce(array, acc_init = nil)
-        acc = acc_init
-        for i in array
-          acc = acc.nil? ? i : yield(acc, i)
-        end
-        acc
-      end
-
-      def compact(array)
-        new_collection = []
-        for i in array
-          new_collection << i unless i.nil?
-        end
-        new_collection
-      end
 
       def countries_count(film)
         return 0 unless film['country']
@@ -57,13 +31,14 @@ module Exercise
       end
 
       def rating_positive?(film)
-        film['rating_kinopoisk'].present? && !film['rating_kinopoisk'].to_f.zero?
+        # film['rating_kinopoisk'].present? && !film['rating_kinopoisk'].to_f.abs.zero?
+        film['rating_kinopoisk'].to_f.abs.positive?
       end
 
       def current_rating(film)
         return 0.0 unless film['rating_kinopoisk']
 
-        film['rating_kinopoisk'].to_f
+        film['rating_kinopoisk'].to_f.abs
       end
 
       def letters_count(string, letter)
