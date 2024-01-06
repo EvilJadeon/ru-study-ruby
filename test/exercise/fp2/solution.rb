@@ -5,10 +5,10 @@ module Exercise
       # Использовать свои написанные функции для реализации следующих - можно.
 
       # Написать свою функцию my_each
-      def my_each(index = 0, &block)
-        if index < self.length
-          yield self[index]
-          my_each(index + 1, &block)
+      def my_each(&block)
+        if self.length > 0
+          yield self[0]
+          MyArray.new(self[1..-1]).my_each(&block)
         end
         self
       end
@@ -27,10 +27,10 @@ module Exercise
         end
       end
 
-      def my_reduce(accumulator = nil, index = 0, &block)
-        if index < self.length
-          new_accumulator = accumulator.nil? ? self[index] : yield(accumulator, self[index])
-          my_reduce(new_accumulator, index + 1, &block)
+      def my_reduce(accumulator = nil, &block)
+        if self.length > 0
+          new_accumulator = accumulator.nil? ? self[0] : yield(accumulator, self[0])
+          MyArray.new(self[1..-1]).my_reduce(new_accumulator, &block)
         else
           accumulator
         end
