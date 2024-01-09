@@ -6,10 +6,10 @@ module Exercise
 
       # Написать свою функцию my_each
       def my_each(&block)
-        if self.length > 0
-          yield self[0]
-          MyArray.new(self[1..-1]).my_each(&block)
-        end
+        return self if self.length.zero?
+
+        yield self[0]
+        MyArray.new(self[1..-1]).my_each(&block)
         self
       end
 
@@ -28,12 +28,10 @@ module Exercise
       end
 
       def my_reduce(accumulator = nil, &block)
-        if self.length > 0
-          new_accumulator = accumulator.nil? ? self[0] : yield(accumulator, self[0])
-          MyArray.new(self[1..-1]).my_reduce(new_accumulator, &block)
-        else
-          accumulator
-        end
+        return accumulator if self.length.zero?
+
+        new_accumulator = accumulator.nil? ? self[0] : yield(accumulator, self[0])
+        MyArray.new(self[1..-1]).my_reduce(new_accumulator, &block)
       end
     end
   end
